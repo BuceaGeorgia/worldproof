@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Environments & tools
+.venv/
+.pytest_cache/
+.ruff_cache/
+.claude/
+.qodo/
+.vscode/
+
+# Generated demo output (the curated samples live in reports/ and docs/img/)
+quickstart-output/
+*-demo-output/
+
+# OS
+.DS_Store

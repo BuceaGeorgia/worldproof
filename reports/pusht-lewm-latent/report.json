@@ -1,0 +1,145 @@
+{
+  "n_rollouts": 12,
+  "device": "mps",
+  "metrics": [
+    {
+      "name": "latent_prediction_error",
+      "higher_is_better": false,
+      "iqm": 0.1058794168485524,
+      "ci": [
+        0.09887513939828625,
+        0.1109038834121385
+      ],
+      "mean": 0.1049908018237508,
+      "median": 0.10650817547001351,
+      "n_rollouts": 12,
+      "mean_curve": [
+        0.05015932169013702,
+        0.07266352900964054,
+        0.0929144434142483,
+        0.11078913812328438,
+        0.13722831180029005,
+        0.16619006690490448
+      ],
+      "performance_profile": {
+        "thresholds": [
+          0.09079805312965238,
+          0.09363172867887289,
+          0.09646540422809338,
+          0.09929907977731389,
+          0.10213275532653439,
+          0.1049664308757549,
+          0.1078001064249754,
+          0.1106337819741959,
+          0.11346745752341642,
+          0.11630113307263691,
+          0.11913480862185742
+        ],
+        "fraction": [
+          0.08333333333333333,
+          0.16666666666666666,
+          0.25,
+          0.25,
+          0.3333333333333333,
+          0.5,
+          0.5,
+          0.8333333333333334,
+          0.8333333333333334,
+          0.8333333333333334,
+          1.0
+        ]
+      }
+    }
+  ],
+  "aggregates": [
+    {
+      "name": "action_recoverability",
+      "higher_is_better": true,
+      "summary": -3.3600608393646554,
+      "curve": [
+        -4.125472038741639,
+        -3.385643576097878,
+        -3.6232341836937474,
+        -2.5960155851072035,
+        -2.755878916133402,
+        -3.6741207364140633
+      ],
+      "n_items": 12,
+      "extra": {
+        "probe": "ridge-linear",
+        "alpha": 1.0,
+        "n_folds": 5,
+        "n_transitions": 72,
+        "latent_dim": 192
+      }
+    }
+  ],
+  "latency": {
+    "median_s": 0.10296491719782352,
+    "p90_s": 0.1061243375763297,
+    "max_s": 0.10987204220145941,
+    "n": 12.0
+  },
+  "skips": {
+    "calibration_ece": {
+      "count": 12,
+      "reason": "metric 'calibration_ece' skipped: it needs at least 2 samples (the spread across samples is the signal), and this rollout has 1. Run predict with more samples."
+    },
+    "calibration_mce": {
+      "count": 12,
+      "reason": "metric 'calibration_mce' skipped: it needs at least 2 samples (the spread across samples is the signal), and this rollout has 1. Run predict with more samples."
+    },
+    "lpips": {
+      "count": 12,
+      "reason": "metric 'lpips' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "lpips@dynamic": {
+      "count": 12,
+      "reason": "metric 'lpips@dynamic' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "object_count_conservation": {
+      "count": 12,
+      "reason": "metric 'object_count_conservation' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "object_permanence": {
+      "count": 12,
+      "reason": "metric 'object_permanence' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "psnr": {
+      "count": 12,
+      "reason": "metric 'psnr' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "psnr@dynamic": {
+      "count": 12,
+      "reason": "metric 'psnr@dynamic' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "ssim": {
+      "count": 12,
+      "reason": "metric 'ssim' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "ssim@dynamic": {
+      "count": 12,
+      "reason": "metric 'ssim@dynamic' skipped: applies to 'pixels' rollouts, but this rollout is 'latents'."
+    },
+    "fvd": {
+      "count": 1,
+      "reason": "fvd skipped: needs pixel rollouts with ground truth (FVD is a pixel/video metric; latent rollouts and reference-free rollouts do not apply)."
+    }
+  },
+  "metric_versions": {
+    "calibration_ece": "1.1.0",
+    "calibration_mce": "1.1.0",
+    "latent_prediction_error": "1.0.0",
+    "lpips": "1.0.0",
+    "lpips@dynamic": "1.0.0",
+    "object_count_conservation": "1.0.0",
+    "object_permanence": "1.0.0",
+    "psnr": "1.0.0",
+    "psnr@dynamic": "1.0.0",
+    "ssim": "1.0.0",
+    "ssim@dynamic": "1.0.0",
+    "action_recoverability": "1.0.0",
+    "fvd": "1.0.0"
+  },
+  "verdict": "Evaluated 12 rollout(s) on 1 metric(s) (device: mps).\n  latent_prediction_error: IQM 0.1059 [0.09888, 0.1109] (lower=better)\n  action_recoverability: -3.36 (set-level, higher=better)\nSkipped (unsupported here): calibration_ece (x12), calibration_mce (x12), lpips (x12), lpips@dynamic (x12), object_count_conservation (x12), object_permanence (x12), psnr (x12), psnr@dynamic (x12), ssim (x12), ssim@dynamic (x12), fvd (x1).\nInference latency: median 0.103s, p90 0.106s."
+}

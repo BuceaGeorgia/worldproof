@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Core suite across all supported platforms, core dependencies only.
+  # This is the "runs on a laptop, no GPU" portability guarantee (SPEC §5).
+  core-tests:
+    name: core (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.10"
+      - name: Install (core + dev, no extras)
+        run: uv sync --group dev
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Test
+        run: uv run pytest
+
+  # Dedicated core-only job that mechanically proves the swm/lerobot absence
+  # invariant: a plain install must not pull the optional adapter stacks, and
+  # the full suite must pass without them (swm tests skip cleanly).
+  core-only-invariant:
+    name: core-only absence invariant
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.10"
+      - name: Install (core + dev, no extras)
+        run: uv sync --group dev
+      - name: Prove optional adapter stacks are absent
+        run: |
+          uv run python - <<'PY'
+          import importlib.util
+          for mod in ("stable_worldmodel", "lerobot"):
+              assert importlib.util.find_spec(mod) is None, f"{mod} leaked into core install"
+          import worldproof
+          import worldproof.adapters.swm  # class defines without the extra
+          print("core-only OK: swm/lerobot absent; worldproof imports on core deps")
+          PY
+      - name: Full suite passes core-only (swm tests skip)
+        run: uv run pytest -v

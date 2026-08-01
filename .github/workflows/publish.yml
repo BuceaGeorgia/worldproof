@@ -1,0 +1,46 @@
+name: Publish to PyPI
+
+# Publishes on a version tag (v0.1.0, v0.2.0, ...) via PyPI trusted publishing:
+# no stored secrets. One-time setup on pypi.org: add this repo as a (pending)
+# publisher for the `worldproof` project, workflow name publish.yml,
+# environment pypi. See PREPUBLISH.md.
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.10"
+      - name: Build sdist + wheel
+        run: uv build
+      - name: Check metadata
+        run: uvx twine check dist/*
+      - name: Smoke-test the built wheel in a clean env
+        run: |
+          uv venv /tmp/smoke --python 3.10
+          uv pip install --python /tmp/smoke/bin/python dist/*.whl
+          /tmp/smoke/bin/python -c "import worldproof; print(worldproof.__version__)"
+          /tmp/smoke/bin/worldproof --help
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # trusted publishing (OIDC)
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1

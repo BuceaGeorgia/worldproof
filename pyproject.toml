@@ -1,0 +1,119 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "worldproof"
+version = "0.1.0"
+description = "A reality check for world models: diagnose where and why rollout predictions break."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "worldproof contributors" }]
+keywords = ["world-models", "evaluation", "video-prediction", "diagnostics"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.10",
+]
+
+# Core stays minimal: the package must import and run with numpy + torch +
+# pillow only (CLAUDE.md hardware rules). Everything heavier is an extra.
+dependencies = [
+  "numpy>=1.24",
+  "torch>=2.1",
+  "pillow>=9.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/BuceaGeorgia/worldproof"
+Repository = "https://github.com/BuceaGeorgia/worldproof"
+Issues = "https://github.com/BuceaGeorgia/worldproof/issues"
+Changelog = "https://github.com/BuceaGeorgia/worldproof/blob/main/CHANGELOG.md"
+
+[project.scripts]
+worldproof = "worldproof.cli:main"
+
+[project.optional-dependencies]
+# Video/rollout-folder I/O (pyav / imageio-ffmpeg wheels are reliable on
+# Linux, macOS, and Windows; decord and other Linux-only readers are banned).
+io = ["av>=12.0", "imageio>=2.31", "imageio-ffmpeg>=0.4"]
+# LPIPS perceptual metric (needs a pretrained net). PSNR/SSIM are pure-numpy
+# core metrics and need nothing here; scikit-image is a dev-only cross-check.
+fidelity = ["lpips>=0.1.4"]
+# FVD default feature extractor. torchvision r3d_18 (Kinetics-400), verified to
+# load and run on CPU and MPS. Not the I3D of published FVD, so numbers are not
+# comparable to those; FVD is a weak reference either way. Pass your own
+# extractor for a paper-comparable backbone. Opt in with `evaluate --fvd`.
+fvd = ["torchvision>=0.15"]
+# stable-worldmodel (LeWM / DINO-WM) adapter. Pins established empirically in
+# session 2 (see worldproof/adapters/swm.py):
+#   - transformers<5: published checkpoints predate the 5.x ViT weight-name
+#     refactor, which breaks load_state_dict.
+#   - opencv-python-headless / imageio / hydra-core / stable-pretraining:
+#     runtime deps of stable-worldmodel's import + load_pretrained path that its
+#     own base package under-declares.
+swm = [
+  "stable-worldmodel==0.1.1",
+  "stable-pretraining>=0.1.8",
+  "transformers<5",
+  "hydra-core>=1.3",
+  "opencv-python-headless>=4.9",
+  "imageio>=2.31",
+]
+# Atari sim-oracle backend (ALE/* gymnasium envs via ale-py). A real,
+# deterministic, CPU-runnable pixel emulator; ale-py bundles the ROMs (no CUDA,
+# no license dance). Unlocks the signature suite on a laptop (AtariSimOracle).
+atari = ["gymnasium>=1.0", "ale-py>=0.10"]
+# Read LeRobotDataset v3.0 directly (parquet + mp4) as a ground-truth source,
+# WITHOUT the `lerobot` package (which needs Python 3.12+) — so worldproof
+# ingests the LeRobot hub's datasets on its 3.10 floor. pyarrow reads the
+# per-chunk parquet; imageio-ffmpeg decodes the per-chunk mp4.
+lerobot-data = ["pyarrow>=14", "imageio>=2.31", "imageio-ffmpeg>=0.4", "huggingface-hub>=0.20"]
+# NOTE: the `lerobot` adapter is intentionally NOT provided — Phase 1 recon
+# found lerobot 0.6.0 exposes no externally-driven forward model our Rollout can
+# wrap without redesign, and is CUDA-bound / Python>=3.12. Revisit if upstream
+# ships an action-conditioned world model with a CPU/MPS path.
+# NOTE: `trackers`, `segmenters`, and `sim` extras are intentionally deferred.
+# Their concrete packages + checkpoints are pinned in CLAUDE.md and land in the
+# same PR as the metrics that need them (invariants / sim-oracle track).
+# NOTE: the `fvd` extra (a pinned I3D video-feature extractor, the default for
+# FrechetVideoDistance) is intentionally deferred — its checkpoint pin must
+# prove a CPU/MPS path on target hardware before it is added (CLAUDE.md hardware
+# rules). Until then FVD ships as a plug-point + the (tested) Fréchet math and
+# skips-and-reports when no extractor is supplied; callers pass their own via
+# `evaluate(..., fvd_extractor=...)`.
+
+[dependency-groups]
+# scikit-image is dev-only: it backs the SSIM cross-check test (our SSIM is
+# pure numpy at runtime), so CI validates SSIM against the reference impl.
+dev = ["pytest>=8.0", "ruff>=0.6", "scikit-image>=0.22"]
+docs = ["mkdocs>=1.6", "mkdocs-material>=9.5"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["worldproof"]
+
+# The sdist is for rebuilding and testing the package, not for hosting the
+# repo: keep sample reports, screenshots, CI config, and the lockfile out.
+[tool.hatch.build.targets.sdist]
+exclude = ["reports/", "docs/", ".github/", "uv.lock", "PREPUBLISH.md"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["worldproof"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra -m 'not slow'"
+markers = [
+  "slow: metric validation suite; deselect with -m 'not slow' (see CLAUDE.md)",
+]
