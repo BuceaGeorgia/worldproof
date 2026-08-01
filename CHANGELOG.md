@@ -3,7 +3,7 @@
 Metric computation changes bump the metric's `version` string and are recorded
 here (numbers people cite must be reproducible — CLAUDE.md).
 
-## Unreleased
+## 0.1.0 (2026-08-01)
 
 ### Changed
 
