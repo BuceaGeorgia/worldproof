@@ -1,6 +1,10 @@
-# worldproof
+<p align="center">
+  <img src="https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/logo.jpg" alt="worldproof" width="560">
+</p>
 
-[![CI](https://github.com/BuceaGeorgia/worldproof/actions/workflows/ci.yml/badge.svg)](https://github.com/BuceaGeorgia/worldproof/actions/workflows/ci.yml)
+<p align="center">
+  <a href="https://github.com/BuceaGeorgia/worldproof/actions/workflows/ci.yml"><img src="https://github.com/BuceaGeorgia/worldproof/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+</p>
 
 **A reality check for world models.**
 
