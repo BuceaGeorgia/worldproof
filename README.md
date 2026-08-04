@@ -3,6 +3,7 @@
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/worldproof/"><img src="https://img.shields.io/pypi/v/worldproof" alt="PyPI"></a>
   <a href="https://github.com/BuceaGeorgia/worldproof/actions/workflows/ci.yml"><img src="https://github.com/BuceaGeorgia/worldproof/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
@@ -23,9 +24,9 @@ That is a different job. See [SPEC.md](SPEC.md) for the exact scope.
 | Can the model be trained and used for planning? | stable-worldmodel |
 | Is the prediction correct, and where does it break? | **worldproof** |
 
-Status: alpha, v0.1 in development. The API and the on-disk rollout format are
-still moving. The data contracts that are frozen are listed in
-[SPEC.md](SPEC.md) section 5.
+Status: alpha. v0.1.0 is published on PyPI. The API and the on-disk rollout
+format may still move before v1; the data contracts that are frozen are listed
+in [SPEC.md](SPEC.md) section 5.
 
 ## See a report card
 
@@ -43,11 +44,13 @@ terminal (the verdict printing, the report being written) would sit well here. -
 
 ## Install
 
+worldproof is on [PyPI](https://pypi.org/project/worldproof/):
+
 ```bash
 pip install worldproof
 ```
 
-Until the first PyPI release lands, install straight from git:
+For the latest development version, install straight from git:
 
 ```bash
 pip install "worldproof @ git+https://github.com/BuceaGeorgia/worldproof"
@@ -121,6 +124,80 @@ real latent world model, needs `worldproof[swm]`). `--sim` accepts `toy` or
 
 `evaluate` runs the metrics your machine supports and reports what it skipped and
 why. A MacBook gets a partial but real report, never an install error.
+
+## Your own model, your own data
+
+The demos above use built-in models and simulators. Real use means plugging in
+yours, and there are three ways to do it. All three are shown working in
+[`examples/bring_your_own.py`](examples/bring_your_own.py), which runs on the
+core install with no downloads. One thing to know up front: the `generate`
+command only wires the built-in models, so your own model goes through the
+Python API below. Anything you save as a rollout folder is then scored by
+`worldproof evaluate` like any other folder.
+
+**1. Wrap your model.** Subclass `WorldModelAdapter` and implement one method:
+given the context frames and the action sequence, return `n_samples` predicted
+futures. A latent model passes `modality="latents"` and also implements
+`encode(frames)`.
+
+```python
+from worldproof import WorldModelAdapter
+
+class MyModel(WorldModelAdapter):
+    def __init__(self):
+        super().__init__(model_id="my-model", modality="pixels", seed=0)
+
+    def _predict_futures(self, context, actions, horizon, n_samples, rng):
+        # call your real model here; return n_samples arrays,
+        # each (horizon, H, W, C) uint8
+        ...
+```
+
+**2. Feed it your recorded data.** Subclass `DatasetSource` and yield windows
+of your trajectories: the context frames, the actions that were taken, and the
+frames that actually followed (the ground truth). Then score any model against
+them. If your data is already a LeRobotDataset v3.0, skip this step and use
+`LeRobotDatasetSource`.
+
+```python
+from worldproof import DatasetSource, OracleRollout, evaluate, rollouts_from_dataset
+
+class MyRecordings(DatasetSource):
+    def truths(self, *, n, context_steps, horizon, seed=0):
+        for window in ...:   # read your storage
+            yield OracleRollout(context=..., actions=..., future=...,
+                                context_id="...", is_failure=False)
+
+rollouts = rollouts_from_dataset(MyRecordings(), MyModel(),
+                                 n=16, context_steps=3, horizon=6)
+report, run_report = evaluate(rollouts)
+```
+
+**3. No wrapper at all.** If you already have predictions and ground truth as
+arrays (computed anywhere, in any framework), build `Rollout` objects, save
+them, and evaluate the folder. This is the path for scoring stored outputs.
+
+```python
+from worldproof import Rollout, RolloutMetadata, save_rollout
+
+rollout = Rollout(
+    modality="pixels",
+    context=context_frames,          # (T, H, W, C) uint8
+    actions=actions,                 # (horizon, action_dim)
+    predictions=(predicted_frames,), # one (horizon, H, W, C) array per sample
+    metadata=RolloutMetadata(fps=10.0, model_id="my-run", resolution=(H, W)),
+    ground_truth=true_frames,        # (horizon, H, W, C)
+)
+save_rollout(rollout, "my-rollouts/ep_00")
+```
+
+```bash
+worldproof evaluate my-rollouts --json report.json --html report.html
+```
+
+The on-disk folder layout is a documented contract (lossless PNG and npy, one
+directory per rollout); see [SPEC.md](SPEC.md) section 5 if you want to write
+it directly from another tool.
 
 ## Examples
 
