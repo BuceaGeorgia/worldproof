@@ -246,8 +246,12 @@ more dynamic task.
 
 ![worldproof report card on the real SO-101 pen-transfer dataset](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/so101-real.png)
 
-<!-- GIF idea: a loop of a real SO-101 episode (context, then predicted vs true
-future) would show how little the scene changes over the horizon. -->
+Here is the busiest stretch of a real episode, frozen prediction against true
+frames. Even here the change is small: the arm slides the white fixture away
+while the frozen prediction keeps it in place. On footage like this a longer
+horizon is what separates models.
+
+![predicted vs true SO-101 frames, side by side](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/so101-pred-vs-true.gif)
 
 ### Real latent world model (LeWM / DINO-WM)
 
