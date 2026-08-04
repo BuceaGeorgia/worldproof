@@ -17,5 +17,8 @@ build/
 quickstart-output/
 *-demo-output/
 
+# Local release checklist (all items done; kept locally for reference)
+PREPUBLISH.md
+
 # OS
 .DS_Store
