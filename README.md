@@ -219,8 +219,10 @@ run alongside the fidelity metrics.
 
 ![worldproof report on Atari Pong](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/atari-pong.png)
 
-<!-- GIF idea: a side-by-side loop of the predicted rollout next to the true
-future for one Pong episode would show the failure clearly. -->
+Here is that failure as pixels rather than numbers: the baseline's prediction
+freezes the scene while the real game keeps moving.
+
+![predicted vs true Pong frames, side by side](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/pong-pred-vs-true.gif)
 
 ### LeRobot dataset, simulated or real
 
