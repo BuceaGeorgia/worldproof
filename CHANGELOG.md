@@ -3,6 +3,26 @@
 Metric computation changes bump the metric's `version` string and are recorded
 here (numbers people cite must be reproducible — CLAUDE.md).
 
+## Unreleased
+
+### Fixed
+
+- **`fps` now describes the frames, not the model (session 19).** Every rollout
+  built through `rollouts_from_dataset` recorded the model adapter's default
+  `fps` (10.0) regardless of the source recording, so a 15 fps DROID window and a
+  30 fps SO-101 window both reported 10.0. `OracleRollout` gains an optional
+  `fps` field that a ground-truth source sets; `predict_with_truth` stamps it
+  onto `RolloutMetadata.fps` when present. Sim oracles leave it `None` and keep
+  the adapter's value, so their behaviour is unchanged. No metric computation
+  changed and no metric version is bumped — `fps` is metadata, not an input to
+  any score, so previously reported numbers stand. See SPEC.md section 5.
+
+### Added
+
+- `docs/make_media.py`, a dev-only generator for the README report-card PNGs and
+  prediction-vs-truth GIFs (excluded from the sdist). The DROID report cards and
+  the 48-step prediction-vs-truth GIF in the README come from it.
+
 ## 0.1.0 (2026-08-01)
 
 ### Changed

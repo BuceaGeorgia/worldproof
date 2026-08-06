@@ -26,11 +26,12 @@ from worldproof.sim.base import OracleRollout
 class SyntheticDataset(DatasetSource):
     """Deterministic in-memory dataset of random-frame windows (a test double)."""
 
-    def __init__(self, *, size=16, action_dim=2, channels=3, n_available=8):
+    def __init__(self, *, size=16, action_dim=2, channels=3, n_available=8, fps=None):
         self._size = size
         self._action_dim = action_dim
         self._channels = channels
         self._n_available = n_available
+        self._fps = fps
 
     def truths(
         self, *, n: int, context_steps: int, horizon: int, seed: int = 0
@@ -47,6 +48,7 @@ class SyntheticDataset(DatasetSource):
                 future=rng.integers(0, 256, (horizon, h, w, c), np.uint8),
                 context_id=f"synthetic:traj={i}",
                 is_failure=(i % 2 == 0),
+                fps=self._fps,
             )
 
 
@@ -64,6 +66,36 @@ class MockLatentAdapter(WorldModelAdapter):
     def _predict_futures(self, context, actions, horizon, n_samples, rng):
         last = self.encode(context)[-1]
         return [np.repeat(last[None], horizon, axis=0).copy() for _ in range(n_samples)]
+
+
+def test_source_fps_describes_the_frames_not_the_model():
+    """A source that knows its sampling rate overrides the adapter's default."""
+    adapter = CopyLastFrameBaseline(fps=10.0)
+    rollouts = rollouts_from_dataset(
+        SyntheticDataset(fps=30.0), adapter, n=2, context_steps=3, horizon=4
+    )
+    assert all(r.metadata.fps == 30.0 for r in rollouts)
+
+
+def test_adapter_fps_kept_when_source_does_not_know_its_rate():
+    """A sim oracle has no meaningful fps; the adapter's value stands."""
+    adapter = CopyLastFrameBaseline(fps=10.0)
+    rollouts = rollouts_from_dataset(
+        SyntheticDataset(), adapter, n=2, context_steps=3, horizon=4
+    )
+    assert all(r.metadata.fps == 10.0 for r in rollouts)
+
+
+def test_oracle_rollout_rejects_nonpositive_fps():
+    with pytest.raises(ValueError, match="fps must be positive"):
+        OracleRollout(
+            context=np.zeros((3, 8, 8, 3), np.uint8),
+            actions=np.zeros((4, 2), np.float32),
+            future=np.zeros((4, 8, 8, 3), np.uint8),
+            context_id="synthetic:traj=0",
+            is_failure=False,
+            fps=0.0,
+        )
 
 
 def test_dataset_pixel_rollouts_are_evaluable():

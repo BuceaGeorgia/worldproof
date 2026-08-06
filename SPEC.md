@@ -294,6 +294,19 @@ an edit here in the same commit.
   `context_id` (str or None, the counterfactual-pair matching key), and
   `is_failure` (bool or None, which marks curated failure episodes and lets
   reports slice failure-only fidelity).
+- Frame-rate authority (recorded 2026-08-07, session 19). `fps` describes the
+  *frames*, so the ground-truth source owns it and the model adapter does not.
+  `OracleRollout` gains an optional `fps: float | None = None` field; when it is
+  set, `predict_with_truth` stamps it onto `RolloutMetadata.fps`, overriding the
+  adapter's configured value. `None` (a sim oracle, which has no meaningful
+  sampling rate) leaves the adapter's value in place, so existing behaviour is
+  unchanged. The reason: before this, every rollout built through
+  `rollouts_from_dataset` recorded the adapter's default of 10.0 regardless of
+  the recording, so a 15 fps DROID window and a 30 fps SO-101 window both
+  reported 10.0. The horizon a metric curve spans is only interpretable in
+  seconds if `fps` is the data's own rate. Contract change: the added field is
+  optional and keyword-defaulted, so existing `OracleRollout` construction sites
+  keep working.
 - Research-pass scope (recorded 2026-07-25, session 3). The v0.1 metric set was
   extended after a 16-source review. No frozen-contract change (`Rollout` and
   `MetricResult` untouched, the additions are new metrics and set-level

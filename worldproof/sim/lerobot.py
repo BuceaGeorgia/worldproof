@@ -208,5 +208,6 @@ class LeRobotDatasetSource(DatasetSource):
                 context_id=f"{self._repo_id}:ep={ep['episode_index']}",
                 is_failure=is_failure,
                 info={"source": "lerobot", "video_key": self._video_key},
+                fps=self._fps,
             )
             yielded += 1

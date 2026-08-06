@@ -67,7 +67,10 @@ def predict_with_truth(
     """Predict from the oracle's context, then attach the oracle's true future.
 
     For a latent model the true future is encoded through the model's encoder so
-    it lives in the same latent space as the predictions.
+    it lives in the same latent space as the predictions. When the ground-truth
+    source knows its own sampling rate (``truth.fps``), that rate describes the
+    frames and wins over the adapter's configured ``fps``, which describes the
+    model.
     """
     predicted = adapter.predict(
         truth.context,
@@ -77,7 +80,10 @@ def predict_with_truth(
         seed=predict_seed,
     )
     metadata = dataclasses.replace(
-        predicted.metadata, context_id=truth.context_id, is_failure=truth.is_failure
+        predicted.metadata,
+        context_id=truth.context_id,
+        is_failure=truth.is_failure,
+        **({} if truth.fps is None else {"fps": truth.fps}),
     )
     return dataclasses.replace(
         predicted,

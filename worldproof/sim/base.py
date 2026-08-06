@@ -40,6 +40,9 @@ class OracleRollout:
         is_failure: The env's outcome label for this rollout (drop / miss /
             collision / no-success).
         info: Raw per-rollout outcome details (rewards, termination, etc.).
+        fps: Sampling rate of ``context``/``future``, when the source knows it
+            (a recorded dataset does; a sim oracle generally does not). ``None``
+            leaves the model adapter's ``fps`` in the resulting rollout metadata.
     """
 
     context: np.ndarray
@@ -48,6 +51,7 @@ class OracleRollout:
     context_id: str
     is_failure: bool
     info: Mapping[str, object] = field(default_factory=dict)
+    fps: float | None = None
 
     def __post_init__(self) -> None:
         for name, arr in (("context", self.context), ("future", self.future)):
@@ -69,6 +73,8 @@ class OracleRollout:
             raise TypeError(f"is_failure must be a bool, got {type(self.is_failure)}")
         if not isinstance(self.context_id, str) or not self.context_id:
             raise ValueError("context_id must be a non-empty string")
+        if self.fps is not None and self.fps <= 0:
+            raise ValueError(f"fps must be positive when given, got {self.fps!r}")
         object.__setattr__(self, "info", MappingProxyType(dict(self.info)))
 
     @property
