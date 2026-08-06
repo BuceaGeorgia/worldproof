@@ -1,0 +1,357 @@
+{
+  "n_rollouts": 64,
+  "device": "mps",
+  "metrics": [
+    {
+      "name": "lpips",
+      "higher_is_better": false,
+      "iqm": 0.013316021339979518,
+      "ci": [
+        0.009131985192380418,
+        0.021008317274805673
+      ],
+      "mean": 0.033333097125433156,
+      "median": 0.01013301210332429,
+      "n_rollouts": 64,
+      "mean_curve": [
+        0.004488315974597867,
+        0.015754244537674822,
+        0.023744802056171466,
+        0.03658904565600096,
+        0.050883331037766766,
+        0.06853884349038708
+      ],
+      "performance_profile": {
+        "thresholds": [
+          0.0020136420970023514,
+          0.03373503805849699,
+          0.06545643401999161,
+          0.09717782998148625,
+          0.1288992259429809,
+          0.16062062190447554,
+          0.19234201786597016,
+          0.22406341382746478,
+          0.2557848097889594,
+          0.28750620575045405,
+          0.3192276017119487
+        ],
+        "fraction": [
+          0.015625,
+          0.75,
+          0.828125,
+          0.890625,
+          0.9375,
+          0.96875,
+          0.984375,
+          0.984375,
+          0.984375,
+          0.984375,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "lpips@dynamic",
+      "higher_is_better": false,
+      "iqm": 0.0145100831052171,
+      "ci": [
+        0.008990079088654096,
+        0.023829657567314647
+      ],
+      "mean": 0.038992038142090735,
+      "median": 0.01001036872912664,
+      "n_rollouts": 64,
+      "mean_curve": [
+        0.005544962020834987,
+        0.016046870247009792,
+        0.028049607299180934,
+        0.04207754653907614,
+        0.06209952887365944,
+        0.08013371387278312
+      ],
+      "performance_profile": {
+        "thresholds": [
+          0.0015574754371906845,
+          0.04069959024441232,
+          0.07984170505163396,
+          0.1189838198588556,
+          0.15812593466607722,
+          0.19726804947329885,
+          0.2364101642805205,
+          0.27555227908774216,
+          0.3146943938949638,
+          0.3538365087021854,
+          0.39297862350940704
+        ],
+        "fraction": [
+          0.015625,
+          0.796875,
+          0.828125,
+          0.890625,
+          0.9375,
+          0.96875,
+          0.984375,
+          0.984375,
+          0.984375,
+          0.984375,
+          1.0
+        ]
+      }
+    },
+    {
+      "name": "psnr",
+      "higher_is_better": true,
+      "iqm": 38.41117744829343,
+      "ci": [
+        35.07903370816541,
+        40.86322464191001
+      ],
+      "mean": 36.35213824748881,
+      "median": 40.52912800195867,
+      "n_rollouts": 64,
+      "mean_curve": [
+        52.37219501905284,
+        36.07049220592863,
+        34.67365277233231,
+        32.96052233460387,
+        31.820671203551402,
+        30.215295949463776
+      ],
+      "performance_profile": {
+        "thresholds": [
+          12.834044776642875,
+          16.231415014371443,
+          19.62878525210001,
+          23.026155489828575,
+          26.423525727557145,
+          29.820895965285715,
+          33.21826620301428,
+          36.61563644074285,
+          40.01300667847141,
+          43.41037691619998,
+          46.80774715392855
+        ],
+        "fraction": [
+          1.0,
+          0.984375,
+          0.953125,
+          0.921875,
+          0.84375,
+          0.734375,
+          0.65625,
+          0.578125,
+          0.515625,
+          0.265625,
+          0.015625
+        ]
+      }
+    },
+    {
+      "name": "psnr@dynamic",
+      "higher_is_better": true,
+      "iqm": 32.42676844597163,
+      "ci": [
+        28.386810894240927,
+        35.67005121403519
+      ],
+      "mean": 30.490203238062332,
+      "median": 34.63624560819646,
+      "n_rollouts": 64,
+      "mean_curve": [
+        50.20842357718878,
+        25.001452374805005,
+        30.97224345432102,
+        24.921037904055066,
+        28.89568371407869,
+        22.94237840392545
+      ],
+      "performance_profile": {
+        "thresholds": [
+          8.983416915716674,
+          13.53723085774438,
+          18.091044799772085,
+          22.64485874179979,
+          27.198672683827496,
+          31.7524866258552,
+          36.30630056788291,
+          40.860114509910616,
+          45.41392845193832,
+          49.96774239396602,
+          54.52155633599373
+        ],
+        "fraction": [
+          1.0,
+          0.921875,
+          0.859375,
+          0.703125,
+          0.625,
+          0.53125,
+          0.484375,
+          0.03125,
+          0.015625,
+          0.015625,
+          0.015625
+        ]
+      }
+    },
+    {
+      "name": "ssim",
+      "higher_is_better": true,
+      "iqm": 0.9486122771147433,
+      "ci": [
+        0.9176999768378302,
+        0.9644955586344592
+      ],
+      "mean": 0.9066989852960674,
+      "median": 0.9647838955349647,
+      "n_rollouts": 64,
+      "mean_curve": [
+        0.9775682840020108,
+        0.9367922504231678,
+        0.9147039878245738,
+        0.8926956915335342,
+        0.873457537982354,
+        0.8449761600107637
+      ],
+      "performance_profile": {
+        "thresholds": [
+          0.5556917047946164,
+          0.5989879601831406,
+          0.6422842155716648,
+          0.6855804709601891,
+          0.7288767263487134,
+          0.7721729817372376,
+          0.8154692371257618,
+          0.858765492514286,
+          0.9020617479028104,
+          0.9453580032913345,
+          0.9886542586798588
+        ],
+        "fraction": [
+          1.0,
+          0.96875,
+          0.953125,
+          0.953125,
+          0.921875,
+          0.875,
+          0.8125,
+          0.765625,
+          0.703125,
+          0.59375,
+          0.015625
+        ]
+      }
+    },
+    {
+      "name": "ssim@dynamic",
+      "higher_is_better": true,
+      "iqm": 0.8986182121099834,
+      "ci": [
+        0.8283777969130527,
+        0.9442204018677075
+      ],
+      "mean": 0.8227982386038806,
+      "median": 0.9549034994600344,
+      "n_rollouts": 64,
+      "mean_curve": [
+        0.9503632792741085,
+        0.8820588991392435,
+        0.8277479331863499,
+        0.8028367168120688,
+        0.7667297123723444,
+        0.7070528908391683
+      ],
+      "performance_profile": {
+        "thresholds": [
+          0.16181483622392762,
+          0.24461223355988532,
+          0.327409630895843,
+          0.4102070282318007,
+          0.4930044255677584,
+          0.5758018229037161,
+          0.6585992202396738,
+          0.7413966175756315,
+          0.8241940149115892,
+          0.9069914122475469,
+          0.9897888095835047
+        ],
+        "fraction": [
+          1.0,
+          0.96875,
+          0.953125,
+          0.953125,
+          0.9375,
+          0.84375,
+          0.78125,
+          0.71875,
+          0.625,
+          0.546875,
+          0.015625
+        ]
+      }
+    }
+  ],
+  "aggregates": [
+    {
+      "name": "fvd",
+      "higher_is_better": false,
+      "summary": 8.215872799462716,
+      "curve": null,
+      "n_items": 128,
+      "extra": {
+        "n_real_clips": 64,
+        "n_generated_clips": 64,
+        "feature_dim": 512,
+        "note": "quality, not dynamics; action-blind (SPEC \u00a74)"
+      }
+    }
+  ],
+  "latency": {
+    "median_s": 0.00026702089235186577,
+    "p90_s": 0.00046153329312801364,
+    "max_s": 0.0007558329962193966,
+    "n": 64.0
+  },
+  "skips": {
+    "calibration_ece": {
+      "count": 64,
+      "reason": "metric 'calibration_ece' skipped: it needs at least 2 samples (the spread across samples is the signal), and this rollout has 1. Run predict with more samples."
+    },
+    "calibration_mce": {
+      "count": 64,
+      "reason": "metric 'calibration_mce' skipped: it needs at least 2 samples (the spread across samples is the signal), and this rollout has 1. Run predict with more samples."
+    },
+    "latent_prediction_error": {
+      "count": 64,
+      "reason": "metric 'latent_prediction_error' skipped: applies to 'latents' rollouts, but this rollout is 'pixels'."
+    },
+    "object_count_conservation": {
+      "count": 64,
+      "reason": "metric 'object_count_conservation' skipped: it needs a tracker. Install one with `pip install worldproof[trackers]`."
+    },
+    "object_permanence": {
+      "count": 64,
+      "reason": "metric 'object_permanence' skipped: it needs a tracker. Install one with `pip install worldproof[trackers]`."
+    },
+    "action_recoverability": {
+      "count": 1,
+      "reason": "action_recoverability skipped: no latent rollouts (the probe diagnoses a latent world model's space; generate latent rollouts with a latent adapter, e.g. swm:<checkpoint>)."
+    }
+  },
+  "metric_versions": {
+    "calibration_ece": "1.1.0",
+    "calibration_mce": "1.1.0",
+    "latent_prediction_error": "1.0.0",
+    "lpips": "1.0.0",
+    "lpips@dynamic": "1.0.0",
+    "object_count_conservation": "1.0.0",
+    "object_permanence": "1.0.0",
+    "psnr": "1.0.0",
+    "psnr@dynamic": "1.0.0",
+    "ssim": "1.0.0",
+    "ssim@dynamic": "1.0.0",
+    "action_recoverability": "1.0.0",
+    "fvd": "1.0.0"
+  },
+  "verdict": "Evaluated 64 rollout(s) on 6 metric(s) (device: mps).\n  lpips: IQM 0.01332 [0.009132, 0.02101] (lower=better)\n  lpips@dynamic: IQM 0.01451 [0.00899, 0.02383] (lower=better)\n  psnr: IQM 38.41 [35.08, 40.86] (higher=better)\n  psnr@dynamic: IQM 32.43 [28.39, 35.67] (higher=better)\n  ssim: IQM 0.9486 [0.9177, 0.9645] (higher=better)\n  ssim@dynamic: IQM 0.8986 [0.8284, 0.9442] (higher=better)\n  fvd: 8.216 (set-level, lower=better)\nSkipped (unsupported here): calibration_ece (x64), calibration_mce (x64), latent_prediction_error (x64), object_count_conservation (x64), object_permanence (x64), action_recoverability (x1).\nInference latency: median 0.000267s, p90 0.000462s."
+}

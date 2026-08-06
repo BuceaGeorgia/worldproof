@@ -230,6 +230,7 @@ freezes the scene while the real game keeps moving.
 pip install worldproof[lerobot-data]
 python examples/lerobot_demo.py                                          # lerobot/pusht (a simulator)
 python examples/lerobot_demo.py --repo Qiu-Xinchuan/so-101_pen-transfer  # a real SO-101 arm
+python examples/lerobot_demo.py --repo lerobot/droid_1.0.1               # DROID, real manipulation
 python examples/lerobot_demo.py --repo <any LeRobotDataset v3.0 on the Hub>
 ```
 
@@ -239,10 +240,16 @@ whole LeRobot Hub, both simulated benchmarks and real robot recordings.
 
 The Push-T report at the top of this page comes from a simulator. Here is the
 same pipeline on real cameras: a physical SO-101 arm doing a pen transfer, three
-cameras at 480 by 640. The baseline scores high even on the moving regions,
-because the arm moves slowly over this short horizon. That is a useful result by
-itself: to tell models apart on slow real footage you need a longer horizon or a
-more dynamic task.
+cameras at 480 by 640, 64 rollouts over a 6-step horizon. The baseline scores
+high even on the moving regions (dynamic-region PSNR 53.9 dB, SSIM 0.983), and
+the dynamic-region curve does not degrade across the horizon at all: it starts at
+SSIM 0.972 and ends at 0.950, wandering rather than falling.
+
+That flat curve is the result, and it is a warning about the eval rather than
+about any model. If predicting six steps ahead is no harder than predicting one,
+there is nothing for a good model to be better *at*, so no metric can rank models
+on this footage. To separate models on slow real recordings you need a longer
+horizon or a more dynamic task.
 
 ![worldproof report card on the real SO-101 pen-transfer dataset](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/so101-real.png)
 
@@ -252,6 +259,42 @@ while the frozen prediction keeps it in place. On footage like this a longer
 horizon is what separates models.
 
 ![predicted vs true SO-101 frames, side by side](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/so101-pred-vs-true.gif)
+
+### DROID: how long a horizon do you actually need?
+
+```bash
+python examples/lerobot_demo.py --repo lerobot/droid_1.0.1 --n 64 --horizon 48
+```
+
+The SO-101 result says a short horizon on slow footage cannot rank models. DROID
+answers the follow-up question. It is real manipulation footage at 15 fps, so the
+scene moves about twice as far per step, and the same copy-last-frame baseline
+degrades instead of holding still.
+
+Run out to 48 steps and the horizon curve shows where the usable window is. The
+dynamic-region score falls steeply and monotonically for the first dozen steps
+(SSIM 0.873 at step 1, 0.446 at step 12), keeps falling more slowly out to about
+step 24, then floors at roughly SSIM 0.20 and PSNR 10.3 dB and stops moving.
+
+![worldproof report card on DROID over a 48-step horizon](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/droid-h48.png)
+
+Here is what that decay looks like. Left is the prediction, right is what
+actually happened, over the same 48 steps. The baseline holds the last frame it
+saw while the real scene keeps going, and by the end the two images have nothing
+in common.
+
+![predicted vs true DROID frames over a 48-step horizon](https://raw.githubusercontent.com/BuceaGeorgia/worldproof/main/docs/img/droid-pred-vs-true.gif)
+
+So both ends of the range are dead. Below about four steps everything is close to
+perfect and models tie; past about 28 steps the prediction has decorrelated and
+models tie again, this time at the floor. On footage like this the horizon worth
+evaluating on is somewhere between, roughly 8 to 24 steps.
+
+Two caveats. This is a copy-last-frame baseline, so it marks where a *trivial*
+predictor becomes separable; a real model stays correlated longer and would push
+the upper end out. And LPIPS does not separate DROID from the SO-101 recording at
+all, and points the other way on the masked variant — the pixel metrics agree
+here, the perceptual one does not.
 
 ### Real latent world model (LeWM / DINO-WM)
 
